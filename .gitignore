@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Personal study / interview-prep notes — private, never committed
+*.private.md

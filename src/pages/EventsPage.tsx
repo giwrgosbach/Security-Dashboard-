@@ -1,8 +1,16 @@
 
+
+import {mockEvents} from "../lib/mockEvents"
+
+import EventTable from "../components/events/EventTable"
+
+
+
+
 export default function EventsPage() {
+
     return (
-        <div>
-            <h1 className="text-2xl font-semibold text-slate-900">Events</h1>
-        </div>
+        
+        <EventTable events={mockEvents} />
     )
 }

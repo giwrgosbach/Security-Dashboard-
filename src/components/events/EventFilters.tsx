@@ -36,7 +36,7 @@ export default function EventFilters() {
       <select
         value={severity}
         onChange={(e) => updateParam('severity', e.target.value)}
-        className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+        className="cursor-pointer rounded-md border border-slate-300 px-3 py-2 text-sm"
       >
         <option value="all">All severities</option>
         <option value="critical">Critical</option>
@@ -48,7 +48,7 @@ export default function EventFilters() {
       <select
         value={status}
         onChange={(e) => updateParam('status', e.target.value)}
-        className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+        className="cursor-pointer rounded-md border border-slate-300 px-3 py-2 text-sm"
       >
         <option value="all">All statuses</option>
         <option value="open">Open</option>

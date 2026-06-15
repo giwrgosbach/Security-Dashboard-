@@ -30,7 +30,7 @@ export default function EventTable({ events, sortField, sortDir, onSort }: Event
                 <button
                   type="button"
                   onClick={() => onSort(col.key)}
-                  className="inline-flex items-center gap-1 font-medium hover:text-slate-900"
+                  className="inline-flex cursor-pointer items-center gap-1 font-medium hover:text-slate-900"
                 >
                   {col.label}
                   {/* arrow shows only on the active sort column */}

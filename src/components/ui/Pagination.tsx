@@ -16,7 +16,7 @@ export default function Pagination({ page, totalPages }: PaginationProps) {
   }
 
   const btn =
-    'rounded-md border border-slate-300 px-3 py-1 text-sm hover:bg-slate-50 ' +
+    'cursor-pointer rounded-md border border-slate-300 px-3 py-1 text-sm hover:bg-slate-50 ' +
     'disabled:cursor-not-allowed disabled:opacity-40'
 
   return (

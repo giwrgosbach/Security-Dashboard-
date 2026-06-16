@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 
+import ProtectedRoute from './components/auth/ProtectedRoute'
 import AppLayout from './components/layout/AppLayout'
+import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
 import EventsPage from './pages/EventsPage'
 import EventDetailPage from './pages/EventDetailPage'
@@ -10,14 +12,19 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* layout route: renders the shell (sidebar + navbar) once,
-            child pages render into its <Outlet /> */}
-        <Route element={<AppLayout />}>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/events" element={<EventsPage />} />
-          <Route path="/events/:id" element={<EventDetailPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
+        {/* Public route */}
+        <Route path="/login" element={<LoginPage />} />
+
+        {/* Protected: auth gate → app shell → pages.
+            Two layers of <Outlet />: ProtectedRoute renders AppLayout, AppLayout renders the page. */}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<AppLayout />}>
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/events" element={<EventsPage />} />
+            <Route path="/events/:id" element={<EventDetailPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

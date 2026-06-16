@@ -4,8 +4,10 @@ import type { SecurityEvent } from '../../types'
 
 import SeverityBadge from '../ui/SeverityBadge'
 
-import StatusBadge from '../ui/StatusBadge' 
+import StatusBadge from '../ui/StatusBadge'
 
+import { useUIStore } from '../../stores/uiStore'
+import { hasPermission } from '../../lib/permissions'
 
 
 interface EventRowProps {
@@ -17,6 +19,8 @@ interface EventRowProps {
 
 export default function EventRow({event}: EventRowProps) {
 
+    const currentRole = useUIStore((s) => s.currentRole)
+
     return (
 
         <tr className = "border-b border-slate-200 hover:bg-slate-50">
@@ -27,6 +31,32 @@ export default function EventRow({event}: EventRowProps) {
             <td className = "px-4 py-3"> <StatusBadge status = {event.status} /></td>
             <td className = "px-4 py-3"> {event.assignedTo ?? '-' }</td>
             <td className = "px-4 py-3"> {new Date (event.timestamp).toLocaleString()}</td>
+
+            {/* Role-aware actions. hasPermission is the single gate; buttons are Day-7 placeholders. */}
+            <td className="px-4 py-3">
+              <div className="flex gap-2">
+                {hasPermission(currentRole, 'edit') && (
+                  <button
+                    type="button"
+                    className="cursor-pointer rounded-md border border-slate-300 px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-100"
+                  >
+                    Edit
+                  </button>
+                )}
+                {hasPermission(currentRole, 'delete') && (
+                  <button
+                    type="button"
+                    className="cursor-pointer rounded-md border border-red-300 px-2 py-1 text-xs font-medium text-red-700 hover:bg-red-50"
+                  >
+                    Delete
+                  </button>
+                )}
+                {/* viewer has neither → a dash so the cell isn't empty */}
+                {!hasPermission(currentRole, 'edit') && !hasPermission(currentRole, 'delete') && (
+                  <span className="text-xs text-slate-400">—</span>
+                )}
+              </div>
+            </td>
 
         </tr>
 

@@ -1,19 +1,27 @@
 import { NavLink } from 'react-router-dom'
+import { useUIStore } from '../../stores/uiStore'
+import { hasPermission, type Permission } from '../../lib/permissions'
 
-// Centralized link list — add a route here and it shows up in the sidebar.
-// On Day 4 we'll filter this by the user's role (RBAC).
-const navItems = [
+// Centralized link list. `requires` (optional) gates a link behind a permission.
+const navItems: { to: string; label: string; requires?: Permission }[] = [
   { to: '/dashboard', label: 'Dashboard' },
   { to: '/events', label: 'Events' },
-  { to: '/settings', label: 'Settings' },
+  { to: '/settings', label: 'Settings', requires: 'manage_users' },
 ]
 
 export default function Sidebar() {
+  const currentRole = useUIStore((s) => s.currentRole)
+
+  // Keep a link if it needs no permission, OR the current role has that permission.
+  const visibleItems = navItems.filter(
+    (item) => !item.requires || hasPermission(currentRole, item.requires),
+  )
+
   return (
     <aside className="flex w-60 flex-col gap-1 bg-slate-900 p-4 text-slate-100">
       <span className="mb-4 px-3 text-lg font-semibold">SecOps</span>
 
-      {navItems.map((item) => (
+      {visibleItems.map((item) => (
         <NavLink
           key={item.to}
           to={item.to}

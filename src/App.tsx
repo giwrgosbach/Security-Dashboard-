@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 
 import ProtectedRoute from './components/auth/ProtectedRoute'
+import AdminRoute from './components/auth/AdminRoute'
 import AppLayout from './components/layout/AppLayout'
 import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
@@ -23,7 +24,11 @@ function App() {
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/events" element={<EventsPage />} />
             <Route path="/events/:id" element={<EventDetailPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
+
+            {/* Admin-only branch — role guard nested inside the auth guard */}
+            <Route element={<AdminRoute />}>
+              <Route path="/settings" element={<SettingsPage />} />
+            </Route>
           </Route>
         </Route>
       </Routes>

@@ -38,12 +38,16 @@ export default function EventTable({ events, sortField, sortDir, onSort }: Event
                 </button>
               </th>
             ))}
+            {/* Actions column — not sortable, so a plain header (no sort button) */}
+            <th scope="col" className="px-4 py-2 text-left font-medium">
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody>
           {events.length === 0 ? (
             <tr>
-              <td colSpan={6} className="px-4 py-6 text-center text-slate-500">
+              <td colSpan={7} className="px-4 py-6 text-center text-slate-500">
                 No events found
               </td>
             </tr>

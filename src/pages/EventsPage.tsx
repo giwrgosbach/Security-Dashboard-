@@ -1,9 +1,10 @@
 import { useSearchParams } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import type { SecurityEvent } from '../types'
 import EventTable from '../components/events/EventTable'
 import EventFilters from '../components/events/EventFilters'
 import Pagination from '../components/ui/Pagination'
-import { mockEvents } from '../lib/mockEvents'
+import { fetchEvents } from '../lib/api'
 
 const PAGE_SIZE = 8
 
@@ -36,6 +37,17 @@ function compareEvents(a: SecurityEvent, b: SecurityEvent, field: string): numbe
 export default function EventsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
 
+  // SERVER STATE: React Query owns the events list. queryKey ['events'] is the
+  // cache identity; queryFn is how it fetches. data/isLoading/isError come for free.
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['events'],
+    queryFn: fetchEvents,
+  })
+
+  // `data` is undefined until the fetch resolves — fall back to [] so the
+  // filter/sort/paginate pipeline below never runs on undefined and crashes.
+  const events = data ?? []
+
   // --- ALL view state read from the URL (shareable + refresh-safe) ---
   const search = (searchParams.get('search') ?? '').toLowerCase()
   const severity = searchParams.get('severity') ?? 'all'
@@ -45,7 +57,7 @@ export default function EventsPage() {
   const page = Number(searchParams.get('page')) || 1 // garbage/absent → 1
 
   // 1) filter
-  const filtered = mockEvents.filter(
+  const filtered = events.filter(
     (event) =>
       `${event.description} ${event.source}`.toLowerCase().includes(search) &&
       (severity === 'all' || event.severity === severity) &&
@@ -80,7 +92,14 @@ export default function EventsPage() {
     <div className="space-y-4">
       <h1 className="text-2xl font-semibold text-slate-900">Events</h1>
       <EventFilters />
-      <EventTable events={paged} sortField={sortField} sortDir={sortDir} onSort={handleSort} />
+      <EventTable
+        events={paged}
+        isLoading={isLoading}
+        isError={isError}
+        sortField={sortField}
+        sortDir={sortDir}
+        onSort={handleSort}
+      />
       <Pagination page={safePage} totalPages={totalPages} />
     </div>
   )

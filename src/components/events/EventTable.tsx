@@ -2,6 +2,8 @@ import type { SecurityEvent } from '../../types'
 import EventRow from './EventRow'
 
 interface EventTableProps {
+    isLoading: boolean
+    isError: boolean
   events: SecurityEvent[]
   sortField: string
   sortDir: string
@@ -18,7 +20,38 @@ const columns = [
   { key: 'timestamp', label: 'Time' },
 ]
 
-export default function EventTable({ events, sortField, sortDir, onSort }: EventTableProps) {
+export default function EventTable({ events, isLoading, isError, sortField, sortDir, onSort }: EventTableProps) {
+  // Decide what goes INSIDE <tbody>, in priority order. Building it as a variable
+  // here keeps the JSX below clean — no tangled nested ternary.
+  let body
+  if (isLoading) {
+    body = (
+      <tr>
+        <td colSpan={7} className="px-4 py-6 text-center text-slate-500">
+          Loading events…
+        </td>
+      </tr>
+    )
+  } else if (isError) {
+    body = (
+      <tr>
+        <td colSpan={7} className="px-4 py-6 text-center text-red-600">
+          Failed to load events. Please try again.
+        </td>
+      </tr>
+    )
+  } else if (events.length === 0) {
+    body = (
+      <tr>
+        <td colSpan={7} className="px-4 py-6 text-center text-slate-500">
+          No events found
+        </td>
+      </tr>
+    )
+  } else {
+    body = events.map((event) => <EventRow key={event.id} event={event} />)
+  }
+
   return (
     <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
       <table className="w-full table-auto text-sm">
@@ -44,17 +77,7 @@ export default function EventTable({ events, sortField, sortDir, onSort }: Event
             </th>
           </tr>
         </thead>
-        <tbody>
-          {events.length === 0 ? (
-            <tr>
-              <td colSpan={7} className="px-4 py-6 text-center text-slate-500">
-                No events found
-              </td>
-            </tr>
-          ) : (
-            events.map((event) => <EventRow key={event.id} event={event} />)
-          )}
-        </tbody>
+        <tbody>{body}</tbody>
       </table>
     </div>
   )

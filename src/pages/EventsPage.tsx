@@ -92,7 +92,7 @@ export default function EventsPage() {
     <div className="space-y-4">
       <h1 className="text-2xl font-semibold text-slate-900">Events</h1>
       <EventFilters />
-      <EventTable
+      <EventTable 
         events={paged}
         isLoading={isLoading}
         isError={isError}

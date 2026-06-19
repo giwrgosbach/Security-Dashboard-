@@ -4,9 +4,6 @@ import type {SecurityEvent } from '../../types'
 
 
 interface SeverityBadgeProps {
-
-
-
     severity: SecurityEvent['severity']
 }
 

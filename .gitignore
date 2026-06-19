@@ -25,3 +25,6 @@ dist-ssr
 
 # Personal study / interview-prep notes — private, never committed
 *.private.md
+
+# Personal documents (CV, cover letters) — never committed to a public repo
+*.docx

@@ -1,10 +1,14 @@
+import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { SecurityEvent } from '../types'
 import EventTable from '../components/events/EventTable'
 import EventFilters from '../components/events/EventFilters'
 import Pagination from '../components/ui/Pagination'
-import { fetchEvents } from '../lib/api'
+import EventFormModal from '../components/events/EventFormModal'
+import { useUIStore } from '../stores/uiStore'
+import { hasPermission } from '../lib/permissions'
+import { deleteEvent, fetchEvents } from '../lib/api'
 
 const PAGE_SIZE = 8
 
@@ -36,6 +40,25 @@ function compareEvents(a: SecurityEvent, b: SecurityEvent, field: string): numbe
 
 export default function EventsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
+  const currentRole = useUIStore((s) => s.currentRole) // drives the RBAC gate on "New event"
+
+  // The form modal's state: is it open, and (if editing) WHICH event?
+  // editingEvent === undefined → CREATE mode; a real event → EDIT mode (pre-filled).
+  const [showForm, setShowForm] = useState(false)
+  const [editingEvent, setEditingEvent] = useState<SecurityEvent | undefined>(undefined)
+
+  // Open in CREATE mode — nothing to edit.
+  function openCreate() {
+    setEditingEvent(undefined)
+    setShowForm(true)
+  }
+
+  // Open in EDIT mode — the row calls this UP with its event (lifting state up),
+  // we remember it, and the modal pre-fills from it.
+  function openEdit(event: SecurityEvent) {
+    setEditingEvent(event)
+    setShowForm(true)
+  }
 
   // SERVER STATE: React Query owns the events list. queryKey ['events'] is the
   // cache identity; queryFn is how it fetches. data/isLoading/isError come for free.
@@ -43,6 +66,24 @@ export default function EventsPage() {
     queryKey: ['events'],
     queryFn: fetchEvents,
   })
+
+  // Delete is a page-level mutation (rows stay presentational). Same write→read
+  // loop as create/update: on success we invalidate ['events'] and the table refetches.
+  const queryClient = useQueryClient()
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteEvent(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['events'] }),
+    onError: (error) => console.error('Failed to delete event:', error),
+  })
+
+  // Destructive action → confirm first. window.confirm is fine here; a polished
+  // product would use a styled dialog, but the UX principle (confirm before delete)
+  // is what matters.
+  function handleDelete(id: string) {
+    if (window.confirm('Delete this event? This cannot be undone.')) {
+      deleteMutation.mutate(id)
+    }
+  }
 
   // `data` is undefined until the fetch resolves — fall back to [] so the
   // filter/sort/paginate pipeline below never runs on undefined and crashes.
@@ -90,17 +131,38 @@ export default function EventsPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-semibold text-slate-900">Events</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold text-slate-900">Events</h1>
+        {/* Only roles with 'create' permission see the trigger — same hasPermission
+            gate as the row Edit/Delete buttons. Frontend RBAC is UX; the API re-checks. */}
+        {hasPermission(currentRole, 'create') && (
+          <button
+            type="button"
+            onClick={openCreate}
+            className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
+          >
+            + New event
+          </button>
+        )}
+      </div>
       <EventFilters />
-      <EventTable 
+      <EventTable
         events={paged}
         isLoading={isLoading}
         isError={isError}
         sortField={sortField}
         sortDir={sortDir}
         onSort={handleSort}
+        onEdit={openEdit}
+        onDelete={handleDelete}
       />
       <Pagination page={safePage} totalPages={totalPages} />
+
+      {/* Renders ONLY while showForm is true. `event` decides the mode:
+          undefined → create, a real event → edit (pre-filled). */}
+      {showForm && (
+        <EventFormModal event={editingEvent} onClose={() => setShowForm(false)} />
+      )}
     </div>
   )
 }

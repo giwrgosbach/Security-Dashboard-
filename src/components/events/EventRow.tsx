@@ -14,10 +14,12 @@ interface EventRowProps {
 
 
     event: SecurityEvent
+    onEdit: (event: SecurityEvent) => void // call UP to the page to open the edit form
+    onDelete: (id: string) => void // call UP to the page to delete this event
 }
 
 
-export default function EventRow({event}: EventRowProps) {
+export default function EventRow({event, onEdit, onDelete}: EventRowProps) {
 
     const currentRole = useUIStore((s) => s.currentRole)
 
@@ -38,6 +40,7 @@ export default function EventRow({event}: EventRowProps) {
                 {hasPermission(currentRole, 'edit') && (
                   <button
                     type="button"
+                    onClick={() => onEdit(event)}
                     className="cursor-pointer rounded-md border border-slate-300 px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-100"
                   >
                     Edit
@@ -46,6 +49,7 @@ export default function EventRow({event}: EventRowProps) {
                 {hasPermission(currentRole, 'delete') && (
                   <button
                     type="button"
+                    onClick={() => onDelete(event.id)}
                     className="cursor-pointer rounded-md border border-red-300 px-2 py-1 text-xs font-medium text-red-700 hover:bg-red-50"
                   >
                     Delete

@@ -8,6 +8,8 @@ interface EventTableProps {
   sortField: string
   sortDir: string
   onSort: (field: string) => void // callback up to the page — table stays presentational
+  onEdit: (event: SecurityEvent) => void // same idea: row asks the page to open the edit form
+  onDelete: (id: string) => void // row asks the page to delete it
 }
 
 // One source of truth for the columns: label + the field key used for sorting.
@@ -20,7 +22,7 @@ const columns = [
   { key: 'timestamp', label: 'Time' },
 ]
 
-export default function EventTable({ events, isLoading, isError, sortField, sortDir, onSort }: EventTableProps) {
+export default function EventTable({ events, isLoading, isError, sortField, sortDir, onSort, onEdit, onDelete }: EventTableProps) {
   // Decide what goes INSIDE <tbody>, in priority order. Building it as a variable
   // here keeps the JSX below clean — no tangled nested ternary.
   let body
@@ -49,7 +51,7 @@ export default function EventTable({ events, isLoading, isError, sortField, sort
       </tr>
     )
   } else {
-    body = events.map((event) => <EventRow key={event.id} event={event} />)
+    body = events.map((event) => <EventRow key={event.id} event={event} onEdit={onEdit} onDelete={onDelete} />)
   }
 
   return (

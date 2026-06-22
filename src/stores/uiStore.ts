@@ -1,19 +1,35 @@
 import { create } from 'zustand'
-import type { Role } from '../types' // reuse the single source of truth for roles
+import { persist } from 'zustand/middleware'
+import type { Role } from '../types'
 
-// The store's shape: the state it holds + the actions that change it.
-// (Actions live INSIDE the store — that's the Zustand convention.)
+export type Theme = 'light' | 'dark'
+
 interface UIStore {
-  currentRole: Role // which role the UI is rendering as right now
-  setRole: (role: Role) => void // swap the active role (drives the demo role-switcher)
+  currentRole: Role
+  theme: Theme
+  setRole: (role: Role) => void
+  toggleTheme: () => void
 }
 
-// create<UIStore>() returns a hook you call in any component — no <Provider> needed.
-// The callback receives `set` (the updater) and returns the initial state + actions.
-export const useUIStore = create<UIStore>((set) => ({
-  currentRole: 'admin', // start as admin so the full UI is visible by default
+// create<UIStore>()(...) — the extra () is required when composing middleware
+// in TypeScript. Zustand uses curried type inference: the first call fixes the
+// store's type; the second call receives the middleware-wrapped creator. Without
+// the extra (), TS can't thread the generic through the middleware chain.
+export const useUIStore = create<UIStore>()(
+  persist(
+    (set) => ({
+      currentRole: 'admin',
 
-  // set({ ... }) shallow-merges: we pass only the key we're changing,
-  // every other field in the store is preserved automatically.
-  setRole: (role) => set({ currentRole: role }),
-}))
+      // Smart initializer: on first visit (nothing in localStorage yet) we read the
+      // OS preference. persist will override this with the stored value on return
+      // visits — so the user's explicit choice always wins over the OS default.
+      theme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
+
+      setRole: (role) => set({ currentRole: role }),
+      toggleTheme: () => set((state) => ({ theme: state.theme === 'dark' ? 'light' : 'dark' })),
+    }),
+    // 'ui-store' is the localStorage key. The anti-flash script in index.html reads
+    // this EXACT key — keep them in sync or flash prevention silently breaks.
+    { name: 'ui-store' }
+  )
+)

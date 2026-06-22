@@ -5,6 +5,24 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>security-dashboard</title>
+    <!-- Anti-flash: runs at HTML-parse time, before any script bundle loads.
+         Reads the same localStorage key ('ui-store') and same JSON path
+         (state.theme) that Zustand persist writes — they MUST stay in sync.
+         Sets .dark on <html> immediately so the very first paint is correct. -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('ui-store')
+          var dark = false
+          if (stored) {
+            dark = JSON.parse(stored).state.theme === 'dark'
+          } else {
+            dark = window.matchMedia('(prefers-color-scheme: dark)').matches
+          }
+          if (dark) document.documentElement.classList.add('dark')
+        } catch (_) {}
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

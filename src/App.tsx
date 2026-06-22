@@ -1,4 +1,6 @@
+import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { useUIStore } from './stores/uiStore'
 
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import AdminRoute from './components/auth/AdminRoute'
@@ -10,6 +12,16 @@ import EventDetailPage from './pages/EventDetailPage'
 import SettingsPage from './pages/SettingsPage'
 
 function App() {
+  const theme = useUIStore((s) => s.theme)
+
+  // Sync the theme to <html> after every toggle. classList.toggle(name, force)
+  // adds the class when force=true, removes it when false — one call, no branching.
+  // The anti-flash script in index.html does this same operation at parse time so
+  // the very first paint is already correct; this effect keeps it in sync afterward.
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark')
+  }, [theme])
+
   return (
     <BrowserRouter>
       <Routes>

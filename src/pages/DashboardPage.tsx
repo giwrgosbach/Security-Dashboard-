@@ -43,13 +43,13 @@ export default function DashboardPage() {
   }, [data]) // depends on the stable cache reference
 
   // 3) GUARDS — after every hook (Rules of Hooks).
-  if (isLoading) return <p className="text-slate-500">Loading dashboard…</p>
-  if (isError) return <p className="text-red-600">Failed to load events. Please try again.</p>
+  if (isLoading) return <p className="text-slate-500 dark:text-slate-400">Loading dashboard…</p>
+  if (isError) return <p className="text-red-600 dark:text-red-400">Failed to load events. Please try again.</p>
 
   // 4) RENDER — read the derived stats.
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold text-slate-900">Dashboard</h1>
+      <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Dashboard</h1>
 
       {/* STAT CARDS ROW — your <StatCard> components go here (step 4).
           You already have the numbers: stats.total, stats.bySeverity, stats.byStatus. */}

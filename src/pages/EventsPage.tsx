@@ -132,14 +132,14 @@ export default function EventsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900">Events</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Events</h1>
         {/* Only roles with 'create' permission see the trigger — same hasPermission
             gate as the row Edit/Delete buttons. Frontend RBAC is UX; the API re-checks. */}
         {hasPermission(currentRole, 'create') && (
           <button
             type="button"
             onClick={openCreate}
-            className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
+            className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200"
           >
             + New event
           </button>

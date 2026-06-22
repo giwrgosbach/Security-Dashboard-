@@ -25,7 +25,7 @@ export default function EventRow({event, onEdit, onDelete}: EventRowProps) {
 
     return (
 
-        <tr className = "border-b border-slate-200 hover:bg-slate-50">
+        <tr className = "border-b border-slate-200 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800/60">
 
             <td className = "px-4 py-3"> <SeverityBadge severity = {event.severity} /></td>
             <td className = "px-4 py-3"> {event.description}</td>
@@ -41,7 +41,7 @@ export default function EventRow({event, onEdit, onDelete}: EventRowProps) {
                   <button
                     type="button"
                     onClick={() => onEdit(event)}
-                    className="cursor-pointer rounded-md border border-slate-300 px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-100"
+                    className="cursor-pointer rounded-md border border-slate-300 px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
                   >
                     Edit
                   </button>
@@ -50,14 +50,14 @@ export default function EventRow({event, onEdit, onDelete}: EventRowProps) {
                   <button
                     type="button"
                     onClick={() => onDelete(event.id)}
-                    className="cursor-pointer rounded-md border border-red-300 px-2 py-1 text-xs font-medium text-red-700 hover:bg-red-50"
+                    className="cursor-pointer rounded-md border border-red-300 px-2 py-1 text-xs font-medium text-red-700 hover:bg-red-50 dark:border-red-500/40 dark:text-red-400 dark:hover:bg-red-500/10"
                   >
                     Delete
                   </button>
                 )}
                 {/* viewer has neither → a dash so the cell isn't empty */}
                 {!hasPermission(currentRole, 'edit') && !hasPermission(currentRole, 'delete') && (
-                  <span className="text-xs text-slate-400">—</span>
+                  <span className="text-xs text-slate-400 dark:text-slate-500">—</span>
                 )}
               </div>
             </td>

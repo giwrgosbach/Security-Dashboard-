@@ -137,10 +137,10 @@ export default function EventFormModal({ event, onClose }: EventFormModalProps) 
         role="dialog"
         aria-modal="true"
         aria-label={isEdit ? 'Edit event' : 'Create event'}
-        className="w-full max-w-lg rounded-lg bg-white p-6 shadow-xl"
+        className="w-full max-w-lg rounded-lg bg-white p-6 shadow-xl dark:bg-slate-900"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="mb-4 text-lg font-semibold text-slate-900">
+        <h2 className="mb-4 text-lg font-semibold text-slate-900 dark:text-slate-100">
           {isEdit ? 'Edit event' : 'New event'}
         </h2>
 
@@ -149,7 +149,7 @@ export default function EventFormModal({ event, onClose }: EventFormModalProps) 
           {errors.length > 0 && (
             <ul
               role="alert"
-              className="list-inside list-disc space-y-0.5 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+              className="list-inside list-disc space-y-0.5 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300"
             >
               {errors.map((err) => (
                 <li key={err}>{err}</li>
@@ -169,7 +169,7 @@ export default function EventFormModal({ event, onClose }: EventFormModalProps) 
               • The event is typed ChangeEvent<HTMLInputElement> — that's what makes
                 `e.target.value` a typed string with autocomplete. */}
           <div>
-            <label htmlFor="source" className="mb-1 block text-sm font-medium text-slate-700">
+            <label htmlFor="source" className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
               Source
             </label>
             <input
@@ -180,12 +180,12 @@ export default function EventFormModal({ event, onClose }: EventFormModalProps) 
                 setForm((prev) => ({ ...prev, source: e.target.value }))
               }
               placeholder="e.g. firewall-eu-1"
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder-slate-400 dark:focus:border-slate-400"
             />
           </div>
 
           <div>
-            <label htmlFor="description" className="mb-1 block text-sm font-medium text-slate-700">
+            <label htmlFor="description" className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
               Description
             </label>
             <input
@@ -196,12 +196,12 @@ export default function EventFormModal({ event, onClose }: EventFormModalProps) 
                 setForm((prev) => ({ ...prev, description: e.target.value }))
               }
               placeholder="e.g. Active exploitation attempt..."
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder-slate-400 dark:focus:border-slate-400"
             />
           </div>
 
           <div>
-            <label htmlFor="severity" className="mb-1 block text-sm font-medium text-slate-700">
+            <label htmlFor="severity" className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
               Severity
             </label>
             <select
@@ -210,7 +210,7 @@ export default function EventFormModal({ event, onClose }: EventFormModalProps) 
               onChange={(e: ChangeEvent<HTMLSelectElement>) =>
               setForm((prev) => ({ ...prev, severity: e.target.value as Severity }))
               }
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder-slate-400 dark:focus:border-slate-400"
             >
                 <option value="critical">Critical</option>
                 <option value="high">High</option>
@@ -220,7 +220,7 @@ export default function EventFormModal({ event, onClose }: EventFormModalProps) 
           </div>
 
           <div>
-            <label htmlFor="status" className="mb-1 block text-sm font-medium text-slate-700">
+            <label htmlFor="status" className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
               Status
             </label>
             <select
@@ -229,7 +229,7 @@ export default function EventFormModal({ event, onClose }: EventFormModalProps) 
               onChange={(e: ChangeEvent<HTMLSelectElement>) =>
               setForm((prev) => ({ ...prev, status: e.target.value as EventStatus }))
               }
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder-slate-400 dark:focus:border-slate-400"
             >
                 <option value="open">Open</option>
                 <option value="investigating">Investigating</option>
@@ -239,7 +239,7 @@ export default function EventFormModal({ event, onClose }: EventFormModalProps) 
 
 
           <div>
-            <label htmlFor="assignedTo" className="mb-1 block text-sm font-medium text-slate-700">
+            <label htmlFor="assignedTo" className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
               Assigned To
             </label>
             <input
@@ -250,7 +250,7 @@ export default function EventFormModal({ event, onClose }: EventFormModalProps) 
                 setForm((prev) => ({ ...prev, assignedTo: e.target.value }))
               }
               placeholder="e.g. Mark Smith"
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder-slate-400 dark:focus:border-slate-400"
             />
           </div>
 
@@ -268,7 +268,7 @@ export default function EventFormModal({ event, onClose }: EventFormModalProps) 
             <button
               type="button"
               onClick={onClose}
-              className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+              className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
             >
               Cancel
             </button>
@@ -276,7 +276,7 @@ export default function EventFormModal({ event, onClose }: EventFormModalProps) 
               type="submit"
               // 👉 step 4: disable while saving → disabled={mutation.isPending}
               disabled={isSaving}
-              className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
+              className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200"
             >
               {isSaving ? 'Saving...' : isEdit ? 'Save changes' : 'Create event'}
             </button>

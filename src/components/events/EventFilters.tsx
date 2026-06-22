@@ -30,13 +30,13 @@ export default function EventFilters() {
         value={search}
         onChange={(e) => updateParam('search', e.target.value)}
         placeholder="Search description or source…"
-        className="w-64 rounded-md border border-slate-300 px-3 py-2 text-sm"
+        className="w-64 rounded-md border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder-slate-400"
       />
 
       <select
         value={severity}
         onChange={(e) => updateParam('severity', e.target.value)}
-        className="cursor-pointer rounded-md border border-slate-300 px-3 py-2 text-sm"
+        className="cursor-pointer rounded-md border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder-slate-400"
       >
         <option value="all">All severities</option>
         <option value="critical">Critical</option>
@@ -48,7 +48,7 @@ export default function EventFilters() {
       <select
         value={status}
         onChange={(e) => updateParam('status', e.target.value)}
-        className="cursor-pointer rounded-md border border-slate-300 px-3 py-2 text-sm"
+        className="cursor-pointer rounded-md border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder-slate-400"
       >
         <option value="all">All statuses</option>
         <option value="open">Open</option>

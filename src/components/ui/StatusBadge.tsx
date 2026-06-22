@@ -7,9 +7,9 @@ type BadgeStyle = {bg: string; text: string}
 
 const statusStyles: Record<EventStatus,BadgeStyle> = {
 
-        open:          { bg: 'bg-blue-100',   text: 'text-blue-800' },   // new, needs triage
-        investigating: { bg: 'bg-violet-100', text: 'text-violet-800' }, // in progress  (amber if you prefer)
-        resolved:      { bg: 'bg-green-100',  text: 'text-green-600' },  // done, de-emphasized
+        open:          { bg: 'bg-blue-100 dark:bg-blue-500/15',     text: 'text-blue-800 dark:text-blue-300' },     // new, needs triage
+        investigating: { bg: 'bg-violet-100 dark:bg-violet-500/15', text: 'text-violet-800 dark:text-violet-300' }, // in progress  (amber if you prefer)
+        resolved:      { bg: 'bg-green-100 dark:bg-green-500/15',   text: 'text-green-600 dark:text-green-300' },   // done, de-emphasized
 }
 
 

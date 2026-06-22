@@ -17,10 +17,11 @@ export default function Pagination({ page, totalPages }: PaginationProps) {
 
   const btn =
     'cursor-pointer rounded-md border border-slate-300 px-3 py-1 text-sm hover:bg-slate-50 ' +
+    'dark:border-slate-600 dark:hover:bg-slate-800 ' +
     'disabled:cursor-not-allowed disabled:opacity-40'
 
   return (
-    <div className="flex items-center justify-between text-sm text-slate-600">
+    <div className="flex items-center justify-between text-sm text-slate-600 dark:text-slate-400">
       <span>
         Page {page} of {totalPages}
       </span>

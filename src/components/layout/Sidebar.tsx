@@ -18,7 +18,13 @@ export default function Sidebar() {
   )
 
   return (
-    <aside className="flex w-60 flex-col gap-1 bg-slate-900 p-4 text-slate-100">
+    // <nav> is the navigation landmark — screen readers list it in their landmark menu
+    // so a user can jump straight to the menu. aria-label names it ("Primary"), which
+    // matters once a page has more than one nav region.
+    <nav
+      aria-label="Primary"
+      className="flex w-60 flex-col gap-1 bg-slate-900 p-4 text-slate-100"
+    >
       <span className="mb-4 px-3 text-lg font-semibold">SecOps</span>
 
       {visibleItems.map((item) => (
@@ -36,6 +42,6 @@ export default function Sidebar() {
           {item.label}
         </NavLink>
       ))}
-    </aside>
+    </nav>
   )
 }

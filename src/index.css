@@ -1,2 +1,32 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  /* One consistent keyboard-focus ring for every interactive element, app-wide.
+     :focus-visible (not :focus) means the ring shows for KEYBOARD focus but not
+     after a mouse click — so mouse users don't see a ring on every button they
+     press, while keyboard users always know where they are. */
+  :focus-visible {
+    outline: 2px solid #2563eb; /* blue-600 */
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  .dark :focus-visible {
+    outline-color: #60a5fa; /* blue-400 — brighter, for contrast on dark surfaces */
+  }
+}
+
+/* Respect the OS "reduce motion" setting. Users who set it can suffer nausea or
+   vestibular issues from animation, so we near-instantly resolve every transition,
+   animation, and smooth scroll. A global guard like this covers Tailwind's
+   transition-* / animate-* utilities everywhere without touching each component. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,10 +1,16 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { ChangeEvent, SyntheticEvent } from 'react' // FormEvent is @deprecated in React 19 types
 import type { SecurityEvent, Severity, EventStatus } from '../../types'
 import type { NewEvent } from '../../lib/api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createEvent, updateEvent } from '../../lib/api'
 import { validateEventForm, sanitizeEventForm } from '../../lib/validation'
+
+// Every element the focus trap should cycle through, in DOM order. We exclude
+// [tabindex="-1"]: those are programmatically focusable but deliberately skipped
+// by the Tab key, so they must not count as a boundary of the trap.
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
 interface EventFormModalProps {
   /** Absent → "create" mode. Present → "edit" mode, pre-filled from this event. */
   event?: SecurityEvent
@@ -50,6 +56,13 @@ export default function EventFormModal({ event, onClose }: EventFormModalProps) 
   // Validation errors to show the user. Empty = nothing wrong (or not yet submitted).
   const [errors, setErrors] = useState<string[]>([])
 
+  // a11y refs. These hold DOM nodes, not rendered values, so they're refs (mutating
+  // them must NOT trigger a re-render):
+  //  • panelRef    → the dialog box itself, so we can scope focus queries to its insides.
+  //  • triggerRef  → whatever element was focused when the modal opened (the button the
+  //                  user clicked). We send focus back to it on close.
+  const panelRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLElement | null>(null)
 
   const queryClient = useQueryClient()
 
@@ -88,11 +101,53 @@ export default function EventFormModal({ event, onClose }: EventFormModalProps) 
   })
 
 
-  // a11y: Escape closes the modal. Add the listener on mount; the returned cleanup
-  // function removes it on unmount — without that, every open would leak a listener.
+  // a11y — INITIAL FOCUS + FOCUS RETURN. Runs once (empty deps), because the modal
+  // mounting IS "opening" and unmounting IS "closing".
+  //  • On open: remember the current activeElement (the trigger button) so we can
+  //    return to it later, then move focus to the first field inside the dialog —
+  //    a keyboard user should land inside the dialog, not stranded on the page behind.
+  //    We read the ref in an effect, not during render, because the DOM node only
+  //    exists after the first render commits (it's null while rendering).
+  //  • On close: the cleanup function runs on unmount and restores focus to the
+  //    trigger, so the keyboard user picks up exactly where they left off.
+  useEffect(() => {
+    triggerRef.current = document.activeElement as HTMLElement | null
+    const firstField = panelRef.current?.querySelector<HTMLElement>(FOCUSABLE_SELECTOR)
+    firstField?.focus()
+
+    return () => triggerRef.current?.focus()
+  }, [])
+
+  // a11y — ESCAPE + FOCUS TRAP. One keydown listener handles both dialog keyboard rules.
+  //  • Escape closes the modal.
+  //  • Tab is trapped: focus cycles within the dialog and never escapes to the page
+  //    behind. We grab the focusable children in DOM order and wrap at the edges —
+  //    Shift+Tab off the first element jumps to the last, Tab off the last jumps to
+  //    the first. preventDefault() stops the browser's normal "move to next" behaviour
+  //    so our wrap wins.
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape') {
+        onClose()
+        return
+      }
+      if (e.key !== 'Tab') return
+
+      const panel = panelRef.current
+      if (!panel) return
+      const focusables = panel.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)
+      if (focusables.length === 0) return
+
+      const first = focusables[0]
+      const last = focusables[focusables.length - 1]
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault()
+        last.focus()
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault()
+        first.focus()
+      }
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
@@ -134,13 +189,21 @@ export default function EventFormModal({ event, onClose }: EventFormModalProps) 
       {/* Panel. stopPropagation so clicks INSIDE the form don't bubble up to the
           backdrop's onClose. role/aria-modal mark it as a dialog for screen readers. */}
       <div
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
-        aria-label={isEdit ? 'Edit event' : 'Create event'}
+        // aria-labelledby points at the VISIBLE <h2> id below — so the dialog's
+        // accessible name and its on-screen title can never drift out of sync (which
+        // a separate aria-label string could). The title text already encodes the
+        // create/edit distinction, so we don't repeat that logic here.
+        aria-labelledby="event-modal-title"
         className="w-full max-w-lg rounded-lg bg-white p-6 shadow-xl dark:bg-slate-900"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="mb-4 text-lg font-semibold text-slate-900 dark:text-slate-100">
+        <h2
+          id="event-modal-title"
+          className="mb-4 text-lg font-semibold text-slate-900 dark:text-slate-100"
+        >
           {isEdit ? 'Edit event' : 'New event'}
         </h2>
 

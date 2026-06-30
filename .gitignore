@@ -33,3 +33,6 @@ dist-ssr
 
 # Personal documents (CV, cover letters) — never committed to a public repo
 *.docx
+
+# AI assistant project instructions — private, not for the public repo
+CLAUDE.md

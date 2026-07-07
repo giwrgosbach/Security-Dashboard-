@@ -36,3 +36,6 @@ dist-ssr
 
 # AI assistant project instructions — private, not for the public repo
 CLAUDE.md
+
+# Vercel CLI project link metadata — machine-specific, not for the public repo
+.vercel

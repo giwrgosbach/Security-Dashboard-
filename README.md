@@ -1,73 +1,42 @@
-# React + TypeScript + Vite
+# Security Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React + TypeScript dashboard for triaging security events — auth-gated, role-aware, and built incrementally as a day-by-day learning project.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Auth** — sign-in/out via Clerk, with a `ProtectedRoute` gate on the whole app shell.
+- **RBAC** — three roles (`admin`, `analyst`, `viewer`) mapped to a `Permission` set (`read`, `create`, `edit`, `delete`, `assign`, `manage_users`); UI and routes (e.g. `/settings`) respect the current role via `AdminRoute` and `hasPermission`.
+- **Dashboard** — stat cards plus severity/status breakdowns rendered with Recharts (bar + donut), computed from live query data.
+- **Events table** — filterable, sortable, paginated list of security events with severity/status badges, backed by React Query against a mock API.
+- **Event forms** — create/edit/delete with input validation and sanitization (`dompurify`).
+- **Dark mode** — persisted preference, anti-flash boot script, theme-aware charts.
+- **Accessibility** — accessible modal (focus trap, `Escape`/backdrop close, ARIA roles) and an app-wide a11y pass.
 
-## React Compiler
+## Tech stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+React 19 · TypeScript · Vite · Tailwind CSS 4 · React Router · TanStack Query · Zustand · Recharts · Clerk · DOMPurify
 
-## Expanding the ESLint configuration
+## Getting started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev     # start the dev server
+npm run lint     # eslint
+npm run build    # type-check + production build
+npm run preview  # preview the production build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Set your Clerk publishable key and any other required values in `.env.local` before running the app — auth won't work without it.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Project structure
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+src/
+  components/  auth guards, dashboard charts, event UI, layout, shared ui
+  lib/         api client, permissions, validation, chart colors
+  pages/       route-level views (dashboard, events, event detail, settings, login)
+  stores/      zustand ui state (theme, etc.)
+  types/       shared domain types (SecurityEvent, Role, Severity, ...)
+scripts/
+  seed-mockapi.mjs  seeds the mock API with sample events
 ```
